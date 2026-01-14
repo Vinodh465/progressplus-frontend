@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Vision tranZ IT Solutions</title>
+    <link rel="icon" href="vision-logo.png" alt="Vision tranZ Logo" class="logo-image">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- Password Verification Modal (Shows on browser back/forward) -->
+    <div class="modal active" id="passwordVerificationModal">
+        <div class="modal-content verification-modal">
+            <div class="modal-header verification-header">
+                <h3>🔒 Session Verification Required</h3>
+            </div>
+            <div class="verification-body">
+                <p class="verification-text">Please verify your password to continue using the admin dashboard.</p>
+                <form id="verificationForm">
+                    <div class="form-group">
+                        <label for="verifyEmail">Email</label>
+                        <input type="email" id="verifyEmail" required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="verifyPassword">Password</label>
+                        <input type="password" id="verifyPassword" required placeholder="Enter your password" autocomplete="current-password">
+                    </div>
+                    <div class="verification-error" id="verificationError"></div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" onclick="cancelVerification()">Cancel</button>
+                        <button type="submit" class="submit-btn">Verify & Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>Admin Dashboard</h1>
+                <p class="header-subtitle">Manage your training center</p>
+            </div>
+            <button class="signout-btn" id="signoutBtn">
+                <span class="icon">🚪</span>
+                Sign Out
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-section="users">
+            <span class="icon">👥</span>
+            Users
+        </button>
+        <button class="nav-tab" data-section="classes">
+            <span class="icon">📚</span>
+            Classes
+        </button>
+        <button class="nav-tab" data-section="fees">
+            <span class="icon">💰</span>
+            Fees
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Users Section -->
+        <section class="content-section active" id="users-section">
+            <div class="section-header">
+                <div>
+                    <h2>User Management</h2>
+                    <p class="section-subtitle">Create and manage student and teacher accounts</p>
+                </div>
+                <button class="add-btn" id="addUserBtn">
+                    <span class="icon">➕</span>
+                    Add User
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Batch (Class)</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr class="empty-state">
+                            <td colspan="7">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Classes Section -->
+        <section class="content-section" id="classes-section">
+            <div class="section-header">
+                <div>
+                    <h2>Class Management</h2>
+                    <p class="section-subtitle">Create and manage training classes</p>
+                </div>
+                <button class="add-btn" id="addClassBtn">
+                    <span class="icon">➕</span>
+                    Add Class
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Class Name</th>
+                            <th>Teacher</th>
+                            <th>Start Date</th>
+                            <th>Schedule</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classesTableBody">
+                        <tr class="empty-state">
+                            <td colspan="6">Loading classes...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Fees Section -->
+        <section class="content-section" id="fees-section">
+            <div class="section-header">
+                <div>
+                    <h2>💰 Fee Management</h2>
+                    <p class="section-subtitle">Track and manage student fees</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Total Amount</th>
+                            <th>Paid Amount</th>
+                            <th>Due Amount</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feesTableBody">
+                        <tr class="empty-state">
+                            <td colspan="8">Loading fees...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Add User</h3>
+                <button class="close-btn" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userName">Full Name *</label>
+                        <input type="text" id="userName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userRole">Role *</label>
+                        <select id="userRole" required>
+                            <option value="">Select Role</option>
+                            <option value="Student">Student</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userEmail">Email *</label>
+                        <input type="email" id="userEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPhone">Phone *</label>
+                        <input type="tel" id="userPhone" pattern="[0-9]{10}" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userBatch">Batch/Class</label>
+                        <select id="userBatch">
+                            <option value="">Not Assigned</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">Password <span id="passwordNote">(leave blank to keep current)</span></label>
+                        <input type="password" id="userPassword">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal('userModal')">Cancel</button>
+                    <button type="submit" class="submit-btn">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Class Modal -->
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="classModalTitle">Add Class</h3>
+                <button class="close-btn" onclick="closeModal('classModal')">&times;</button>
+            </div>
+            <form id="classForm">
+                <input type="hidden" id="classId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="className">Class Name *</label>
+                        <input type="text" id="className" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classTeacher">Teacher *</label>
+                        <select id="classTeacher" required>
+                            <option value="">Select Teacher</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="classStartDate">Start Date *</label>
+                        <input type="date" id="classStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classSchedule">Schedule *</label>
+                        <input type="text" id="classSchedule" placeholder="e.g., Mon-Fri 10AM-12PM" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="classStatus">Status *</label>
+                        <select id="classStatus" required>
+                            <option value="Active">Active</option>
+                            <option value="Upcoming">Upcoming</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="classFee">Course Fee (₹) *</label>
+                        <input type="number" id="classFee" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal('classModal')">Cancel</button>
+                    <button type="submit" class="submit-btn">Save Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Fee Payment Modal -->
+    <div class="modal" id="feeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Record Payment</h3>
+                <button class="close-btn" onclick="closeModal('feeModal')">&times;</button>
+            </div>
+            <form id="feeForm">
+                <input type="hidden" id="feeId">
+                <div class="fee-summary">
+                    <p><strong>Student:</strong> <span id="feeStudentName"></span></p>
+                    <p><strong>Class:</strong> <span id="feeClassName"></span></p>
+                    <p><strong>Total Fee:</strong> ₹<span id="feeTotalAmount"></span></p>
+                    <p><strong>Paid:</strong> ₹<span id="feePaidAmount"></span></p>
+                    <p><strong>Remaining:</strong> ₹<span id="feeRemainingAmount"></span></p>
+                </div>
+                <div class="form-group">
+                    <label for="paymentAmount">Payment Amount (₹) *</label>
+                    <input type="number" id="paymentAmount" required min="1">
+                </div>
+                <div class="form-group">
+                    <label for="paymentDate">Payment Date *</label>
+                    <input type="date" id="paymentDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method *</label>
+                    <select id="paymentMethod" required>
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Card">Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal('feeModal')">Cancel</button>
+                    <button type="submit" class="submit-btn">Record Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

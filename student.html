@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Vision tranZ IT Solutions</title>
+    <link rel="icon" href="vision-logo.png" alt="Vision tranZ Logo" class="logo-image">
+    <link rel="stylesheet" href="student.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+   <!-- Password Verification Modal (Shows on browser back/forward) -->
+    <div class="modal active" id="passwordVerificationModal">
+        <div class="modal-content verification-modal">
+            <div class="modal-header verification-header">
+                <h3>🔒 Session Verification Required</h3>
+            </div>
+            <div class="verification-body">
+                <p class="verification-text">Please verify your password to continue using the teacher dashboard.</p>
+                <form id="verificationForm">
+                    <div class="form-group">
+                        <label for="verifyEmail">Email</label>
+                        <input type="email" id="verifyEmail" required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="verifyPassword">Password</label>
+                        <input type="password" id="verifyPassword" required placeholder="Enter your password" autocomplete="current-password">
+                    </div>
+                    <div class="verification-error" id="verificationError"></div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" onclick="cancelVerification()">Cancel</button>
+                        <button type="submit" class="submit-btn">Verify & Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>  
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>Student Dashboard</h1>
+                <p class="header-subtitle">Track your learning journey</p>
+                <p class="student-name" id="studentName"></p>
+            </div>
+            <button class="signout-btn" id="signoutBtn">
+                <span class="icon">🚪</span>
+                Sign Out
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-section="classes">
+            <span class="icon">📚</span>
+            Classes
+        </button>
+        <button class="nav-tab" data-section="timetable">
+            <span class="icon">📅</span>
+            Timetable
+        </button>
+        <button class="nav-tab" data-section="fees">
+            <span class="icon">💰</span>
+            Fees
+        </button>
+        <button class="nav-tab" data-section="take-test">
+            <span class="icon">▶️</span>
+            Take Test
+        </button>
+        <button class="nav-tab" data-section="results">
+            <span class="icon">📊</span>
+            Results
+        </button>
+        <button class="nav-tab" data-section="progress">
+            <span class="icon">📈</span>
+            Progress
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Classes Section -->
+        <section class="content-section active" id="classes-section">
+            <div class="section-header">
+                <div>
+                    <h2>📚 My Classes</h2>
+                    <p class="section-subtitle">Your enrolled classes and courses</p>
+                </div>
+            </div>
+
+            <div class="classes-container" id="classesContainer">
+                <div class="empty-state-card">
+                    <span class="empty-icon">📖</span>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timetable Section -->
+        <section class="content-section" id="timetable-section">
+            <div class="section-header">
+                <div>
+                    <h2>📅 Weekly Timetable</h2>
+                    <p class="section-subtitle">Your class schedule for the week</p>
+                </div>
+            </div>
+
+            <div class="timetable-container" id="timetableContainer">
+                <!-- Days will be populated here -->
+            </div>
+        </section>
+
+        <!-- Fees Section -->
+        <section class="content-section" id="fees-section">
+            <div class="section-header">
+                <div>
+                    <h2>💰 Fees</h2>
+                    <p class="section-subtitle">Track your fee payments and installments</p>
+                </div>
+            </div>
+
+            <div class="fee-stats">
+                <div class="stat-card total-card">
+                    <div class="stat-icon">₹</div>
+                    <div class="stat-content">
+                        <h3>Total Fees</h3>
+                        <p class="stat-value" id="totalFees">₹0</p>
+                    </div>
+                </div>
+                <div class="stat-card paid-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-content">
+                        <h3>Paid Amount</h3>
+                        <p class="stat-value" id="paidAmount">₹0</p>
+                    </div>
+                </div>
+                <div class="stat-card pending-card">
+                    <div class="stat-icon">⚠</div>
+                    <div class="stat-content">
+                        <h3>Pending Amount</h3>
+                        <p class="stat-value" id="pendingAmount">₹0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fee-details-section">
+                <h3>💳 Fee Details & Payment History</h3>
+                <p class="section-subtitle">Click on a fee to view payment installments</p>
+                
+                <div class="fee-list" id="feeList">
+                    <div class="empty-state-message">Loading...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Take Test Section -->
+        <section class="content-section" id="take-test-section">
+            <div class="section-header">
+                <div>
+                    <h2>▶️ Online Test Platform</h2>
+                    <p class="section-subtitle">Take your assigned tests with MCQ and coding questions</p>
+                </div>
+            </div>
+            <div class="tests-container" id="testsContainer">
+                <div class="empty-state-card">
+                    <span class="empty-icon">❗</span>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="content-section" id="results-section">
+            <div class="section-header">
+                <div>
+                    <h2>📊 Tests & Results</h2>
+                    <p class="section-subtitle">View your test scores and upcoming tests</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Test Title</th>
+                            <th>Class</th>
+                            <th>Date</th>
+                            <th>Total Marks</th>
+                            <th>Your Score</th>
+                            <th>Percentage</th>
+                            <th>Grade</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <tr class="empty-state">
+                            <td colspan="8">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section class="content-section" id="progress-section">
+            <div class="section-header">
+                <div>
+                    <h2>📈 My Progress</h2>
+                    <p class="section-subtitle">Track your performance and growth</p>
+                </div>
+            </div>
+
+            <div class="progress-overview" id="progressOverview">
+                <div class="progress-stats-cards">
+                    <div class="progress-stat-card">
+                        <h3>Total Tests</h3>
+                        <p class="progress-stat-value" id="totalTests">0</p>
+                    </div>
+                    <div class="progress-stat-card">
+                        <h3>Average Score</h3>
+                        <p class="progress-stat-value" id="averageScore">0%</p>
+                    </div>
+                    <div class="progress-stat-card">
+                        <h3>Current Grade</h3>
+                        <p class="progress-stat-value grade-display" id="currentGrade">N/A</p>
+                    </div>
+                </div>
+
+                <div class="progress-chart-container">
+                    <h3>Performance Distribution</h3>
+                    <canvas id="progressChart" width="400" height="400"></canvas>
+                </div>
+
+                <div class="performance-history">
+                    <h3>Performance Trend</h3>
+                    <canvas id="trendChart" width="600" height="300"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Test Taking Modal -->
+    <div class="modal large-modal" id="testModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="testModalTitle">Test Name</h3>
+                    <p class="test-timer">Time Remaining: <span id="timeRemaining">00:00</span></p>
+                </div>
+                <button class="close-btn" onclick="closeTest()">&times;</button>
+            </div>
+            
+            <div class="test-content" id="testContent">
+                <!-- Test questions will be loaded here -->
+            </div>
+
+            <div class="test-actions">
+                <button class="btn-secondary" onclick="closeTest()">Cancel</button>
+                <button class="btn-run" id="runCodeBtn">▶️ Run Code</button>
+                <button class="btn-primary" id="submitTestBtn">✅ Submit Test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fee Details Modal -->
+    <div class="modal" id="feeDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Payment History</h3>
+                <button class="close-btn" onclick="closeModal('feeDetailsModal')">&times;</button>
+            </div>
+            <div id="feeDetailsContent">
+                <!-- Payment history will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="student.js"></script>
+</body>
+</html>

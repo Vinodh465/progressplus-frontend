@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Vision tranZ IT Solutions</title>
+    <link rel="icon" href="vision-logo.png" alt="Vision tranZ Logo" class="logo-image">
+    <link rel="stylesheet" href="teacher.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Password Verification Modal (Shows on browser back/forward) -->
+    <div class="modal active" id="passwordVerificationModal">
+        <div class="modal-content verification-modal">
+            <div class="modal-header verification-header">
+                <h3>🔒 Session Verification Required</h3>
+            </div>
+            <div class="verification-body">
+                <p class="verification-text">Please verify your password to continue using the teacher dashboard.</p>
+                <form id="verificationForm">
+                    <div class="form-group">
+                        <label for="verifyEmail">Email</label>
+                        <input type="email" id="verifyEmail" required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="verifyPassword">Password</label>
+                        <input type="password" id="verifyPassword" required placeholder="Enter your password" autocomplete="current-password">
+                    </div>
+                    <div class="verification-error" id="verificationError"></div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" onclick="cancelVerification()">Cancel</button>
+                        <button type="submit" class="submit-btn">Verify & Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>Teacher Dashboard</h1>
+                <p class="header-subtitle">Manage your classes and students</p>
+                <p class="teacher-name" id="teacherName"></p>
+            </div>
+            <button class="signout-btn" id="signoutBtn">
+                <span class="icon">🚪</span>
+                Sign Out
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-section="classes">
+            <span class="icon">📚</span>
+            Classes
+        </button>
+        <button class="nav-tab" data-section="students">
+            <span class="icon">👥</span>
+            Students
+        </button>
+        <button class="nav-tab" data-section="applications">
+            <span class="icon">📝</span>
+            Applications
+        </button>
+        <button class="nav-tab" data-section="schedule">
+            <span class="icon">📅</span>
+            Schedule
+        </button>
+        <button class="nav-tab" data-section="test-platform">
+            <span class="icon">💻</span>
+            Test Platform
+        </button>
+        <button class="nav-tab" data-section="results">
+            <span class="icon">📊</span>
+            Results
+        </button>
+        <button class="nav-tab" data-section="fees">
+            <span class="icon">💰</span>
+            Fees
+        </button>
+        <button class="nav-tab" data-section="progress">
+            <span class="icon">📈</span>
+            Progress
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Classes Section -->
+        <section class="content-section active" id="classes-section">
+            <div class="section-header">
+                <div>
+                    <h2>📚 My Classes</h2>
+                    <p class="section-subtitle">Classes you're currently teaching</p>
+                </div>
+                <button class="add-btn" id="addClassBtn">
+                    <span class="icon">➕</span>
+                    Create New Class
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Class Name</th>
+                            <th>Start Date</th>
+                            <th>Schedule</th>
+                            <th>Fee (₹)</th>
+                            <th>Students</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classesTableBody">
+                        <tr class="empty-state">
+                            <td colspan="7">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Students Section -->
+        <section class="content-section" id="students-section">
+            <div class="section-header">
+                <div>
+                    <h2>👥 Students by Batch</h2>
+                    <p class="section-subtitle">View students enrolled in your classes</p>
+                </div>
+                <div class="batch-filter">
+                    <label for="batchFilter">Select Batch:</label>
+                    <select id="batchFilter" class="batch-select">
+                        <option value="">All Batches</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="students-stats" id="studentsStats">
+                <div class="stat-card">
+                    <h3>Total Students</h3>
+                    <p class="stat-value" id="totalStudents">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Selected Batch</h3>
+                    <p class="stat-value" id="batchStudents">0</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Batch/Class</th>
+                            <th>Joined Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <tr class="empty-state">
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Applications Section -->
+        <section class="content-section" id="applications-section">
+            <div class="section-header">
+                <div>
+                    <h2>📝 New Student Applications</h2>
+                    <p class="section-subtitle">Review and approve new student registrations</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Year</th>
+                            <th>Course</th>
+                            <th>College</th>
+                            <th>Applied On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTableBody">
+                        <tr class="empty-state">
+                            <td colspan="8">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Schedule Section -->
+        <section class="content-section" id="schedule-section">
+            <div class="section-header">
+                <div>
+                    <h2>📅 Class Schedule</h2>
+                    <p class="section-subtitle">Select the days your class meets</p>
+                </div>
+            </div>
+
+            <div class="schedule-days-container">
+                <div class="schedule-form-group">
+                    <label for="scheduleClassSelect">Select Class *</label>
+                    <select id="scheduleClassSelect" class="class-select">
+                        <option value="">Select a class</option>
+                    </select>
+                </div>
+
+                <div class="days-selection">
+                    <h3>Select Class Days:</h3>
+                    <div class="days-grid">
+                        <label class="day-checkbox">
+                            <input type="checkbox" value="Monday"> Monday
+                        </label>
+                        <label class="day-checkbox">
+                            <input type="checkbox" value="Tuesday"> Tuesday
+                        </label>
+                        <label class="day-checkbox">
+                            <input type="checkbox" value="Wednesday"> Wednesday
+                        </label>
+                        <label class="day-checkbox">
+                            <input type="checkbox" value="Thursday"> Thursday
+                        </label>
+                        <label class="day-checkbox">
+                            <input type="checkbox" value="Friday"> Friday
+                        </label>
+                        <label class="day-checkbox">
+                            <input type="checkbox" value="Saturday"> Saturday
+                        </label>
+                        <label class="day-checkbox">
+                            <input type="checkbox" value="Sunday"> Sunday
+                        </label>
+                    </div>
+                </div>
+
+                <button class="submit-btn" id="saveScheduleDaysBtn">Save Schedule</button>
+            </div>
+
+            <div class="current-schedule-display" id="currentScheduleDisplay">
+                <!-- Will show saved schedule here -->
+            </div>
+        </section>
+
+        <!-- Test Platform Section -->
+        <section class="content-section" id="test-platform-section">
+            <div class="section-header">
+                <div>
+                    <h2>💻 Test Platform</h2>
+                    <p class="section-subtitle">Create tests with MCQ and coding questions</p>
+                </div>
+                <button class="add-btn" id="createTestBtn">
+                    <span class="icon">➕</span>
+                    Create Test
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Test Title</th>
+                            <th>Class</th>
+                            <th>Test Date</th>
+                            <th>Duration</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="testsTableBody">
+                        <tr class="empty-state">
+                            <td colspan="7">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="content-section" id="results-section">
+            <div class="section-header">
+                <div>
+                    <h2>📊 Test Results</h2>
+                    <p class="section-subtitle">View student performance and test results</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Test</th>
+                            <th>Class</th>
+                            <th>Score</th>
+                            <th>Total</th>
+                            <th>Percentage</th>
+                            <th>Grade</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <tr class="empty-state">
+                            <td colspan="9">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Fees Section -->
+        <section class="content-section" id="fees-section">
+            <div class="section-header">
+                <div>
+                    <h2>💰 Fee Collection (Installments)</h2>
+                    <p class="section-subtitle">Track fees with installment payments</p>
+                </div>
+                <button class="add-btn" id="addFeeBtn">
+                    <span class="icon">➕</span>
+                    Add Fee
+                </button>
+            </div>
+
+            <div class="fee-stats">
+                <div class="stat-card">
+                    <h3>Total Unpaid</h3>
+                    <p class="stat-value" id="totalUnpaid">₹0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Pending</h3>
+                    <p class="stat-value" id="totalPending">₹0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Collected</h3>
+                    <p class="stat-value" id="totalCollected">₹0</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Total Amount</th>
+                            <th>Paid Amount</th>
+                            <th>Due Amount</th>
+                            <th>Next Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feesTableBody">
+                        <tr class="empty-state">
+                            <td colspan="8">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section class="content-section" id="progress-section">
+            <div class="section-header">
+                <div>
+                    <h2>📈 Student Progress</h2>
+                    <p class="section-subtitle">Track performance of students in your classes</p>
+                </div>
+            </div>
+
+            <div class="progress-grid" id="progressGrid">
+                <div class="empty-state-box">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- All Modals from original code -->
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="classModalTitle">Create New Class</h3>
+                <button class="close-btn" onclick="closeModal('classModal')">&times;</button>
+            </div>
+            <form id="classForm">
+                <input type="hidden" id="classId">
+                <div class="form-group">
+                    <label for="className">Class Name *</label>
+                    <input type="text" id="className" required placeholder="e.g., Full Stack Development">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="classStartDate">Start Date *</label>
+                        <input type="date" id="classStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classSchedule">Schedule *</label>
+                        <input type="text" id="classSchedule" placeholder="e.g., Mon-Fri 10AM-12PM" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="classStatus">Status *</label>
+                        <select id="classStatus" required>
+                            <option value="Active">Active</option>
+                            <option value="Upcoming">Upcoming</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="classFee">Course Fee (₹) *</label>
+                        <input type="number" id="classFee" required min="0">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal('classModal')">Cancel</button>
+                    <button type="submit" class="submit-btn">Save Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal large-modal" id="testModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Test</h3>
+                <button class="close-btn" onclick="closeModal('testModal')">&times;</button>
+            </div>
+            <form id="testForm">
+                <div class="form-group">
+                    <label for="testTitle">Test Title *</label>
+                    <input type="text" id="testTitle" required placeholder="Enter test title">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testClass">Class *</label>
+                        <select id="testClass" required>
+                            <option value="">Select class</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="testDate">Test Date *</label>
+                        <input type="date" id="testDate" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testDuration">Duration (minutes) *</label>
+                        <input type="number" id="testDuration" required value="30" min="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="testType">Test Type *</label>
+                        <select id="testType" required>
+                            <option value="">Select type</option>
+                            <option value="MCQ">MCQ Only</option>
+                            <option value="Programming">Programming Only</option>
+                            <option value="Mixed">Mixed (MCQ + Programming)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="testDescription">Description (Optional)</label>
+                    <textarea id="testDescription" rows="3" placeholder="Test instructions..."></textarea>
+                </div>
+                <div class="questions-section">
+                    <h4>Questions</h4>
+                    <div id="questionsContainer"></div>
+                    <button type="button" class="add-question-btn" id="addMCQBtn">+ Add MCQ Question</button>
+                    <button type="button" class="add-question-btn" id="addProgrammingBtn">+ Add Programming Question</button>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal('testModal')">Cancel</button>
+                    <button type="submit" class="submit-btn">Create Test</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal large-modal" id="viewTestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Test Details</h3>
+                <button class="close-btn" onclick="closeModal('viewTestModal')">&times;</button>
+            </div>
+            <div id="testDetailsContent"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="feeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Fee</h3>
+                <button class="close-btn" onclick="closeModal('feeModal')">&times;</button>
+            </div>
+            <form id="feeForm">
+                <div class="form-group">
+                    <label for="feeBatch">Batch (Class) *</label>
+                    <select id="feeBatch" required>
+                        <option value="">Select batch/class</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="feeStudent">Student *</label>
+                    <select id="feeStudent" required>
+                        <option value="">Select student</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="feeTotalAmount">Total Amount (₹) *</label>
+                    <input type="number" id="feeTotalAmount" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="feeDueDate">Due Date *</label>
+                    <input type="date" id="feeDueDate" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal('feeModal')">Cancel</button>
+                    <button type="submit" class="submit-btn">Create Fee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Record Payment</h3>
+                <button class="close-btn" onclick="closeModal('paymentModal')">&times;</button>
+            </div>
+            <form id="paymentForm">
+                <input type="hidden" id="paymentFeeId">
+                <div class="fee-summary">
+                    <p><strong>Student:</strong> <span id="paymentStudentName"></span></p>
+                    <p><strong>Class:</strong> <span id="paymentClassName"></span></p>
+                    <p><strong>Total Fee:</strong> ₹<span id="paymentTotalAmount"></span></p>
+                    <p><strong>Paid:</strong> ₹<span id="paymentPaidAmount"></span></p>
+                    <p><strong>Remaining:</strong> ₹<span id="paymentRemainingAmount"></span></p>
+                </div>
+                <div class="form-group">
+                    <label for="paymentAmount">Payment Amount (₹) *</label>
+                    <input type="number" id="paymentAmount" required min="1">
+                </div>
+                <div class="form-group">
+                    <label for="paymentDate">Payment Date *</label>
+                    <input type="date" id="paymentDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method *</label>
+                    <select id="paymentMethod" required>
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Card">Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal('paymentModal')">Cancel</button>
+                    <button type="submit" class="submit-btn">Record Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="teacher.js"></script>
+</body>
+</html>

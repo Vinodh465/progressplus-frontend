@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Vision tranZ IT Solutions</title>
+    <link rel="icon" href="vision-logo.png" alt="Vision tranZ Logo" class="logo-image">
+    <link rel="stylesheet" href="signin.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Back Button -->
+        <a href="opening.html" class="back-button">
+            <span class="back-arrow">←</span>
+            <span class="back-text">Back to Home</span>
+        </a>
+
+        <div class="signin-card">
+            <div class="logo-container">
+                <img src="vision-logo.png" alt="Vision tranZ Logo" class="logo-image">
+            </div>
+            
+            <h1 class="training-title">ProgressPlus Training Center</h1>
+            
+            <div class="role-tabs">
+                <button class="role-tab" id="adminTab">
+                    <span class="icon">🛡️</span>
+                    Admin
+                </button>
+                <button class="role-tab" id="teacherTab">
+                    <span class="icon">📖</span>
+                    Teacher
+                </button>
+                <button class="role-tab active" id="studentTab">
+                    <span class="icon">👤</span>
+                    Student
+                </button>
+            </div>
+            
+            <p class="signin-text">Sign in as <span id="roleText">Student</span></p>
+            
+            <form id="signinForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="signin-btn">Sign In</button>
+            </form>
+            
+            <a href="#" class="forgot-password">Forgot your password?</a>
+            
+            <p class="contact-text">Don't have an account? Contact your administrator.</p>
+        </div>
+    </div>
+    
+    <script src="signin.js"></script>
+</body>
+</html>
