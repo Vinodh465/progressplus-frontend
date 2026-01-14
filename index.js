@@ -9,14 +9,15 @@ registrationForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
     // Collect form data
-    const formData = {
-        name: document.getElementById('name').value,
-        year: document.getElementById('year').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        course: document.getElementById('course').value,
-        college: document.getElementById('college').value
-    };
+ const formData = {
+    name: document.getElementById('name').value,
+    yearOfStudy: document.getElementById('year').value,
+    phoneNumber: document.getElementById('phone').value,
+    email: document.getElementById('email').value,
+    courseInterested: document.getElementById('course').value,
+    college: document.getElementById('college').value
+};
+
 
     // Submit to backend
     fetch('https://training-center-backend-y3bq.onrender.com/api/applications/submit', {
@@ -26,29 +27,26 @@ registrationForm.addEventListener('submit', function(e) {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Application submitted:', data);
-        
-        // Show success message
-        successMessage.style.display = 'block';
-        
-        // Reset form
-        registrationForm.reset();
-        
-        // Scroll to success message
-        setTimeout(() => {
-            successMessage.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        }, 100);
-        
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-            successMessage.style.display = 'none';
-        }, 5000);
-    })
+    .then(async response => {
+    const text = await response.text();
+
+    if (!response.ok) {
+        throw new Error(text || 'Submission failed');
+    }
+
+    return text ? JSON.parse(text) : {};
+})
+.then(data => {
+    console.log('Application submitted:', data);
+    successMessage.style.display = 'block';
+
+    registrationForm.reset();
+
+    setTimeout(() => {
+        successMessage.style.display = 'none';
+    }, 5000);
+})
+
     .catch(error => {
         console.error('Error submitting application:', error);
         alert('Error submitting application. Please try again.');
