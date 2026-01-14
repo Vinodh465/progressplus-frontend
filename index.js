@@ -19,7 +19,7 @@ registrationForm.addEventListener('submit', function(e) {
     };
 
     // Submit to backend
-    fetch('http://training-center-backend-y3bq.onrender.com/api/applications/submit', {
+    fetch('https://training-center-backend-y3bq.onrender.com/api/applications/submit', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

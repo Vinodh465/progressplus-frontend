@@ -1,5 +1,5 @@
 // Backend API URL
-const API_BASE_URL = 'http://training-center-backend-y3bq.onrender.com/api';
+const API_BASE_URL = 'https://training-center-backend-y3bq.onrender.com/api';
 
 // Data Storage
 let currentStudent = null;

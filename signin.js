@@ -1,5 +1,5 @@
 // Backend API Configuration
-const API_BASE_URL = 'http://training-center-backend-y3bq.onrender.com/api'; // Your Spring Boot backend
+const API_BASE_URL = 'https://training-center-backend-y3bq.onrender.com/api'; // Your Spring Boot backend
 
 // Get DOM elements
 const signinForm = document.getElementById('signinForm');
